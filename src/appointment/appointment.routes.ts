@@ -1,14 +1,18 @@
 import { Router } from "express";
 import { AppointmentController } from './appointment.controller.js';
+import { AppointmentPostgresRepository } from './appointment.postgres.repository';
+import { pool } from '../shared/db';
+
+//const router = Router();
+const repo = new AppointmentPostgresRepository(pool);
+const controller = new AppointmentController(repo);
 
 export const appointmentRouter = Router();
-const appointmentController = new AppointmentController();
 
-appointmentRouter.get('/', appointmentController.findAllAppointments);
-appointmentRouter.get('/:id', appointmentController.findAppointmentById);
-appointmentRouter.post('/', sanitizeAppointmentInput, appointmentController.addAppointment);
-appointmentRouter.put('/:id', sanitizeAppointmentInput, appointmentController.updateAppointment);
-appointmentRouter.delete('/:id', appointmentController.deleteAppointment);  
+appointmentRouter.get('/', controller.findAllAppointments);
+appointmentRouter.post('/', sanitizeAppointmentInput, controller.addAppointment);
+appointmentRouter.put('/:id', sanitizeAppointmentInput, controller.updateAppointment);
+appointmentRouter.delete('/:id', controller.deleteAppointment); 
 
 function sanitizeAppointmentInput(req:any, res:any, next:any) {
 
@@ -31,3 +35,10 @@ function sanitizeAppointmentInput(req:any, res:any, next:any) {
   next()
 }
 
+//YO
+
+//const controller = new AppointmentController(repo);
+
+appointmentRouter.post('/reservar', controller.create);
+
+export default appointmentRouter;
